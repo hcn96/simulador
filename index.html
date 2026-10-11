@@ -764,6 +764,18 @@ main { padding: 14px; }
   .result-card h3 { flex-wrap: wrap; }
   .amount-value { font-size: clamp(30px,9vw,40px); }
 }
+
+.disclaimer { width: min(640px, calc(100% - 28px)); max-height: calc(100dvh - 28px); padding: 0; border: 0; border-radius: 24px; color: #17234e; background: #fff; box-shadow: 0 24px 80px #001b4540; overflow: auto; }
+.disclaimer::backdrop { background: rgba(12,39,75,.64); backdrop-filter: blur(3px); }
+.disclaimer-content { padding: clamp(24px,4vw,40px); text-align: center; border-top: 5px solid #0471ac; }
+.disclaimer-icon { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; color: white; background: #0471ac; font-size: 40px; font-weight: 800; }
+.disclaimer-label { display: inline-block; margin: 0 0 16px; padding: 8px 16px; border: 1px solid #e5b94c; border-radius: 30px; background: #fff8e1; font-size: 13px; font-weight: 800; }
+.disclaimer h2 { margin: 0 0 22px; font-size: clamp(24px,4vw,32px); line-height: 1.2; }
+.disclaimer-text { margin: 0 0 20px; font-size: clamp(16px,2vw,19px); line-height: 1.6; }
+.disclaimer strong { color: #0471ac; }
+.disclaimer-actions { margin: 26px 0 0; }
+.disclaimer button { font-size: clamp(16px,2vw,20px); }
+.disclaimer button:focus-visible { outline: 3px solid #0471ac; outline-offset: 4px; }
 </style>
 </head>
 <body>
@@ -1084,6 +1096,7 @@ main { padding: 14px; }
             <p>
               El cálculo considera los años trabajados
               con aportes y la remuneración que ingresaste.
+              No añade años futuros automáticamente.
             </p>
           </article>
           <article class="outcome-item"><img class="outcome-image" src="./Documento azul con esquina doblada.png" alt="" aria-hidden="true">
@@ -1118,6 +1131,18 @@ main { padding: 14px; }
     <p class="motto">Tu esfuerzo hoy, tu tranquilidad mañana</p>
   </footer>
 </div>
+<dialog class="disclaimer" id="disclaimerDialog" aria-labelledby="disclaimerTitle" aria-describedby="disclaimerDescription disclaimerDetails">
+  <div class="disclaimer-content">
+    <span class="disclaimer-icon" aria-hidden="true">i</span>
+    <p class="disclaimer-label">INFORMACIÓN IMPORTANTE</p>
+    <h2 id="disclaimerTitle">Antes de simular tu pensión</h2>
+    <p class="disclaimer-text" id="disclaimerDescription">Este simulador ofrece un <strong>cálculo referencial</strong> basado en los datos que ingreses. El resultado no reconoce el derecho a una pensión ni garantiza el monto que recibirás.</p>
+    <p class="disclaimer-text" id="disclaimerDetails">La ONP determinará tu pensión tras evaluar los requisitos y acreditar tus aportes.</p>
+    <form method="dialog" class="disclaimer-actions">
+      <button class="primary" id="disclaimerContinue" type="submit" autofocus>Entendido, empezar simulación <span aria-hidden="true">➜</span></button>
+    </form>
+  </div>
+</dialog>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
@@ -1361,6 +1386,18 @@ document.querySelectorAll(".character, .guide-character").forEach(img => {
     img.hidden = true;
   }
 });
+
+// Guarda únicamente que se leyó el aviso; no guarda datos del formulario.
+const aviso = $("disclaimerDialog");
+const claveAviso = "onp-disclaimer-v1";
+let avisoLeido = false;
+try { avisoLeido = window.sessionStorage.getItem(claveAviso) === "leido"; } catch { /* El aviso funciona también sin almacenamiento. */ }
+aviso.addEventListener("close", () => {
+  try { window.sessionStorage.setItem(claveAviso, "leido"); } catch { /* Almacenamiento no disponible. */ }
+  const destino = $("simulator").hidden ? $("navGuide") : $("birth");
+  destino.focus({ preventScroll: true });
+});
+if (!avisoLeido) aviso.showModal();
 </script>
 </body>
 </html>
