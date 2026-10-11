@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Simulador de Pensión al SNP</title>
+<style>
+:root {
+  --azul: #0471ac;
+  --verde: #48ae47;
+  --texto: #24356d;
+  --violeta: #4331ef;
+  --borde: #d3f2ff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #edfaff;
+  color: var(--texto);
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+button:focus-visible, a:focus-visible {
+  outline: 3px solid #ffbf47;
+  outline-offset: 3px;
+}
+.app {
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: 175px minmax(0,1fr);
+  grid-template-rows: auto 1fr auto;
+}
+/* CABECERA */
+.header {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 330px minmax(0,1fr);
+  align-items: center;
+  gap: 22px;
+  padding: 16px 24px;
+  background:
+    radial-gradient(ellipse at 70% 0%,#a9dffc,transparent 75%),
+    white;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+}
+.logo {
+  display: block;
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.brand-name {
+  padding-left: 15px;
+  border-left: 2px solid #76a9dd;
+  color: #121614;
+  font-size: 18px;
+  line-height: 1.25;
+}
+.heading { text-align: center; }
+h1 {
+  display: inline-block;
+  margin: 0;
+  padding: 9px 24px;
+  background: #ffffffeb;
+  border-radius: 45px;
+  font-size: clamp(27px,3.1vw,46px);
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+h1 span { color: #267dde; }
+.reference {
+  margin: 10px 0 0;
+  padding: 10px 16px;
+  border-radius: 30px;
+  color: #1466a5;
+  background: #cceaff;
+  font-size: clamp(14px,1.1vw,17px);
+  line-height: 1.5;
+}
+/* MENÚ */
+.sidebar {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 10px;
+  border-radius: 0 16px 0 0;
+  background: linear-gradient(145deg,#139fd1,#256ab0);
+}
+.sidebar::after {
+  content: "";
+  position: absolute;
+  bottom: 30px;
+  left: -60px;
+  width: 200px;
+  height: 270px;
+  border-radius: 100px 100px 0 100px;
+  background: #22c1eb45;
+  pointer-events: none;
+}
+.nav-button {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 70px;
+  margin-bottom: 12px;
+  padding: 12px 9px;
+  border: 1px solid #b7eaff;
+  border-radius: 9px;
+  color: white;
+  background: transparent;
+  font-weight: 700;
+  text-align: left;
+}
+.nav-button.active {
+  color: #156ab6;
+  background: white;
+  box-shadow: 0 3px 10px #004c7420;
+}
+.icon {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* SIMULADOR */
+main {
+  min-width: 0;
+  padding: clamp(12px,1.5vw,24px);
+}
+.simulator {
+  display: grid;
+  grid-template-columns: minmax(0,.95fr) minmax(0,1.12fr);
+  gap: 16px;
+  max-width: 1600px;
+  margin: auto;
+}
+.panel {
+  min-width: 0;
+  overflow: hidden;
+  background: white;
+  border: 1px solid var(--borde);
+  border-radius: 13px;
+  box-shadow: 0 4px 8px #18bcdc25;
+}
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 11px 18px;
+  color: white;
+  background: linear-gradient(100deg,#4054ad,#22a3eb);
+}
+.panel-header h2 {
+  margin: 0;
+  font-size: clamp(23px,2vw,30px);
+}
+.result-panel .panel-header {
+  background: linear-gradient(100deg,#287c73,#21baa6);
+}
+.number {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  color: #4054ad;
+  background: white;
+  border-radius: 50%;
+  font-size: 29px;
+  font-weight: 800;
+}
+.result-panel .number { color: #287c73; }
+.form-body {
+  display: grid;
+  gap: 21px;
+  padding: 24px 20px 18px;
+}
+.field label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--violeta);
+  font-size: 17px;
+  font-weight: 700;
+}
+.required { color: #df3434; }
+.input-group {
+  display: flex;
+  width: min(100%,285px);
+  min-height: 48px;
+  margin: 9px 0 0 auto;
+  overflow: hidden;
+  border: 1px solid #dfe5ee;
+  border-radius: 8px;
+  background: #fafafa;
+}
+.input-group input {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 12px;
+  border: 0;
+  outline: none;
+  color: #333;
+  background: transparent;
+  font-size: 16px;
+}
+.input-group:focus-within {
+  border-color: var(--azul);
+  box-shadow: 0 0 0 3px #0471ac18;
+}
+input[readonly] { background: #e9e9e9 !important; }
+.unit {
+  display: grid;
+  place-items: center;
+  min-width: 70px;
+  padding: 8px;
+  color: var(--violeta);
+  background: #eaf0ff;
+  font-weight: 700;
+}
+.help {
+  display: block;
+  margin-top: 6px;
+  color: #586da9;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: right;
+}
+.primary, .reset {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 12px;
+  border-radius: 9px;
+  font-size: clamp(18px,1.6vw,24px);
+  font-weight: 700;
+}
+.primary {
+  color: white;
+  background: linear-gradient(110deg,#258d79,#25ae8c);
+  border: 0;
+}
+.primary:hover { filter: brightness(1.06); }
+.error {
+  margin: 0;
+  color: #b52c2c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.result-panel {
+  display: flex;
+  flex-direction: column;
+}
+.result-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 18px;
+  padding: 22px 18px 18px;
+}
+.result-layout {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(120px,32%);
+  gap: 12px;
+  align-items: end;
+  flex: 1;
+}
+.result-content { min-width: 0; }
+.caption {
+  margin: 0 0 16px;
+  color: #286f70;
+  font-size: clamp(18px,1.5vw,23px);
+  font-weight: 800;
+  line-height: 1.4;
+}
+.amount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 135px;
+  padding: 16px 10px;
+  border-radius: 10px;
+  color: #215e61;
+  background: linear-gradient(120deg,#e0f2ec,#d3eee5);
+}
+.currency {
+  font-size: clamp(38px,4vw,65px);
+  font-style: italic;
+  font-weight: 800;
+}
+.amount-value {
+  font-size: clamp(28px,3vw,45px);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.result-cards {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.result-card {
+  min-width: 0;
+  min-height: 150px;
+  padding: 14px 12px;
+  border-radius: 9px;
+  background: #dceffd;
+}
+.result-card.info { background: #dff0e9; }
+.result-card h3 {
+  margin: 0 0 12px;
+  color: var(--violeta);
+  font-size: 15px;
+}
+.result-card.info h3 { color: #287786; }
+.result-card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.character {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 440px;
+  object-fit: contain;
+  object-position: bottom;
+}
+.reset {
+  margin-top: auto;
+  border: 2px solid #6650ff;
+  color: var(--violeta);
+  background: white;
+}
+.reset:hover { background: #f1efff; }
+/* SEGUNDA PÁGINA */
+.guide {
+  max-width: 1600px;
+  margin: auto;
+}
+.guide-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0,1fr);
+  gap: 16px;
+}
+.guide-intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+}
+.speech {
+  position: relative;
+  width: 100%;
+  margin-bottom: 22px;
+  padding: 18px 14px;
+  border: 2px solid #269dff;
+  border-radius: 20px;
+  background: white;
+  text-align: center;
+  box-shadow: 0 3px 8px #0471ac15;
+}
+.speech::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 48%;
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid #269dff;
+  border-bottom: 2px solid #269dff;
+  background: white;
+  transform: rotate(45deg);
+}
+.speech h2 {
+  margin: 0 0 10px;
+  color: var(--violeta);
+  font-size: 28px;
+}
+.speech p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.4;
+}
+.guide-character {
+  display: block;
+  width: 100%;
+  max-height: 380px;
+  object-fit: contain;
+  object-position: bottom;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.step-card {
+  min-width: 0;
+  padding: 15px 10px 10px;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 3px 6px #17bcdc20;
+}
+.step-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.step-number {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(145deg,#17b9ee,#0743b9);
+  color: white;
+  font-size: 34px;
+  font-weight: 800;
+}
+.step-card:nth-child(even) .step-number {
+  background: linear-gradient(145deg,#4dde7c,#057437);
+}
+.step-card h3 {
+  margin: 0;
+  color: #1745bd;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.step-demo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 110px;
+  padding: 12px 0;
+}
+.step-demo .icon {
+  width: 42px;
+  height: 42px;
+  color: #0471ac;
+}
+.mock-input {
+  min-width: 0;
+  padding: 10px 7px;
+  border: 1px solid #c6e3f7;
+  border-radius: 5px;
+  color: #6379b1;
+  background: #f4fbff;
+  font-size: 13px;
+  text-align: center;
+}
+.demo-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  border-radius: 7px;
+  color: white;
+  background: linear-gradient(130deg,#25b76d,#087c42);
+  font-size: 13px;
+  font-weight: 700;
+}
+.demo-button .icon {
+  width: 25px;
+  height: 25px;
+  color: white;
+}
+.step-description {
+  min-height: 165px;
+  padding: 13px 10px;
+  border-radius: 10px;
+  background: #e3f3ff;
+}
+.step-card:nth-child(even) .step-description {
+  background: #e4f4eb;
+}
+.step-description p {
+  margin: 0 0 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.step-description p:last-child { margin-bottom: 0; }
+.outcomes {
+  display: grid;
+  grid-template-columns: 180px minmax(0,1fr);
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid #81c6ff;
+  border-radius: 18px;
+  background: white;
+}
+.outcome-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px 15px;
+  color: white;
+  background: linear-gradient(140deg,#123b97,#087ec5);
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
+.outcome-items {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 16px;
+  padding: 22px 18px;
+}
+.outcome-item {
+  min-width: 0;
+  padding-right: 14px;
+  border-right: 1px solid #94c8ef;
+}
+.outcome-item:last-child { border: 0; }
+.outcome-item h3 {
+  margin: 0 0 8px;
+  color: #1745bd;
+  font-size: 16px;
+}
+.outcome-item p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.reminder {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  color: #524317;
+  background: #fff1c8;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.reminder .icon {
+  width: 35px;
+  height: 35px;
+  color: #cf9200;
+}
+.reminder p { margin: 0; }
+.back-button {
+  width: auto;
+  min-height: 48px;
+  margin: 18px 0 0 auto;
+  padding: 10px 22px;
+  font-size: 17px;
+}
+/* PIE */
+.footer {
+  grid-column: 1 / -1;
+  padding: 21px 20px;
+  color: white;
+  background: linear-gradient(100deg,#2876b8,#246eb0);
+  text-align: center;
+}
+.contact {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.contact a {
+  color: white;
+  font-weight: 700;
+  text-underline-offset: 4px;
+  overflow-wrap: anywhere;
+}
+.motto {
+  margin: 10px 0 0;
+  font-size: 18px;
+  font-style: italic;
+}
+/* RESPONSIVE */
+@media (max-width: 1300px) {
+  .guide-layout { grid-template-columns: 190px minmax(0,1fr); }
+  .steps { grid-template-columns: repeat(3,minmax(0,1fr)); }
+}
+@media (max-width: 1100px) {
+  .header { grid-template-columns: 280px minmax(0,1fr); }
+  .logo { width: 110px; height: 120px; }
+  .brand-name { font-size: 16px; }
+  .app { grid-template-columns: 155px minmax(0,1fr); }
+  .simulator { grid-template-columns: minmax(0,1fr); max-width: 850px; }
+  .character { max-height: 350px; }
+  .guide-layout { grid-template-columns: minmax(0,1fr); }
+  .guide-intro {
+    flex-direction: row;
+    justify-content: center;
+    gap: 20px;
+  }
+  .speech { max-width: 350px; }
+  .guide-character { width: 170px; max-height: 220px; }
+  .outcomes { grid-template-columns: minmax(0,1fr); }
+  .outcome-title { padding: 15px; }
+}
+@media (max-width: 800px) {
+  .app {
+    grid-template-columns: minmax(0,1fr);
+    grid-template-rows: auto auto 1fr auto;
+  }
+  .header { padding: 14px; gap: 15px; }
+  .sidebar { display: flex; gap: 10px; padding: 10px; border-radius: 0; }
+  .sidebar::after { display: none; }
+  .nav-button {
+    justify-content: center;
+    min-height: 55px;
+    margin: 0;
+    text-align: center;
+  }
+  .nav-button br { display: none; }
+}
+@media (max-width: 560px) {
+  .header { grid-template-columns: minmax(0,1fr); }
+  .brand { justify-content: center; }
+  .logo { width: 120px; height: 130px; }
+  .brand-name { font-size: 16px; }
+  h1 { padding: 10px 15px; font-size: clamp(25px,7vw,32px); }
+  .reference { font-size: 14px; }
+  main { padding: 12px; }
+  .nav-button { gap: 6px; padding: 10px 6px; font-size: 13px; }
+  .nav-button .icon { width: 23px; height: 23px; }
+  .panel-header { gap: 12px; padding: 10px 14px; }
+  .panel-header h2 { font-size: 23px; }
+  .form-body { padding: 20px 16px 16px; }
+  .field label { font-size: 16px; }
+  .input-group { width: 100%; min-height: 50px; }
+  .help { text-align: left; }
+  .result-body { padding: 20px 16px 16px; }
+  .result-layout { grid-template-columns: minmax(0,1fr); }
+  .caption { font-size: 21px; }
+  .currency { font-size: 52px; }
+  .amount-value { font-size: 40px; }
+  .character { width: 150px; max-height: 225px; margin: 10px auto 0; }
+  .guide-intro { gap: 8px; }
+  .speech { padding: 16px 10px; }
+  .speech h2 { font-size: 23px; }
+  .speech p { font-size: 15px; }
+  .guide-character { width: 115px; max-height: 180px; }
+  .steps { grid-template-columns: minmax(0,1fr); }
+  .step-card { padding: 16px; }
+  .step-card h3 { font-size: 18px; }
+  .step-demo { min-height: 85px; }
+  .step-description { min-height: auto; }
+  .step-description p { font-size: 15px; }
+  .outcome-items { grid-template-columns: minmax(0,1fr); }
+  .outcome-item {
+    padding: 0 0 15px;
+    border-right: 0;
+    border-bottom: 1px solid #94c8ef;
+  }
+  .outcome-item:last-child { padding-bottom: 0; }
+  .reminder { align-items: flex-start; padding: 15px; }
+  .back-button { width: 100%; }
+}
+@media (max-width: 350px) {
+  .result-cards { grid-template-columns: minmax(0,1fr); }
+  .result-card { min-height: auto; }
+  .nav-button .icon { display: none; }
+  .guide-character { width: 85px; }
+}
+
+/* Ajustes finales: contenido arriba y alturas naturales */
+.app { min-height: 0; grid-template-rows: auto auto auto; }
+.header { padding: 10px 20px; }
+.logo { height: 110px; }
+main { padding: 14px; }
+.simulator { align-items: start; }
+.form-body { gap: 14px; padding: 18px 18px 14px; }
+.input-group { margin-top: 6px; min-height: 44px; }
+.help { margin-top: 4px; }
+.panel-header { padding: 9px 16px; }
+.result-body { flex: none; padding: 18px 16px 14px; gap: 14px; }
+.result-layout { flex: none; align-items: start; }
+.character { align-self: end; max-height: 345px; }
+.reset { margin-top: 0; }
+.result-card { min-height: 125px; }
+.amount { min-height: 125px; }
+.caption { margin-bottom: 12px; }
+.guide-intro { justify-content: flex-start; }
+.speech { padding: 14px 12px; margin-bottom: 18px; }
+.guide-character { max-height: 285px; }
+.step-card { display: flex; flex-direction: column; }
+.step-demo { min-height: 85px; }
+.step-description { min-height: 0; flex: 1; }
+.outcomes, .reminder { margin-top: 14px; }
+.outcome-items { padding: 16px; }
+.footer { padding: 14px 20px; }
+.motto { margin-top: 6px; }
+@media (max-width: 800px) {
+ .app { grid-template-rows: auto auto auto auto; }
+ .guide-character { max-height: 200px; }
+}
+@media (max-width: 560px) {
+ .logo { height: 105px; }
+ main { padding: 10px; }
+ .form-body { padding: 16px; gap: 16px; }
+ .input-group { min-height: 48px; }
+ .result-body { padding: 16px; }
+ .character { max-height: 190px; margin: 0 auto; }
+ .guide-character { max-height: 150px; }
+ .step-description { flex: none; }
+}
+
+
+/* Íconos PNG y ejemplo vacío */
+.empty-years { display:flex; align-items:center; padding:0; overflow:hidden; }
+.blank-value { display:block; width:48px; min-height:38px; background:white; }
+.empty-years > span:last-child { padding:9px 7px; background:#def2ff; }
+.outcome-title { flex-direction:column; gap:8px; }
+.outcome-bulb { width:48px; height:48px; object-fit:contain; }
+.outcome-item { display:grid; grid-template-columns:55px minmax(0,1fr); column-gap:12px; align-content:start; }
+.outcome-image { grid-row:1 / span 2; width:55px; height:65px; object-fit:contain; align-self:center; }
+.outcome-item h3, .outcome-item p { grid-column:2; }
+.warning-image { width:42px; height:42px; object-fit:contain; flex-shrink:0; }
+.demo-image { width:45px; height:55px; object-fit:contain; }
+@media (max-width:800px) {
+ .outcome-items { grid-template-columns:minmax(0,1fr); }
+ .outcome-item { border-right:0; border-bottom:1px solid #94c8ef; padding:0 0 12px; }
+ .outcome-item:last-child { padding-bottom:0; }
+}
+
+
+/* Formulario compacto en pantallas con espacio para dos columnas. */
+.result-card h3 { display: flex; align-items: center; gap: 7px; }
+.result-card h3 .icon { width: 24px; height: 24px; flex: 0 0 24px; }
+.amount { flex-wrap: nowrap; }
+@media (min-width: 1101px) {
+  .field { display: grid; grid-template-columns: minmax(0,1fr) minmax(150px,48%); gap: 4px 10px; align-items: center; }
+  .field .input-group { width: 100%; margin: 0; }
+  .field .help { grid-column: 1 / -1; }
+  .form-body { gap: 16px; }
+  .result-card { min-height: 112px; }
+  .character { max-height: 320px; }
+}
+@media (max-width: 560px) {
+  .result-card h3 { flex-wrap: wrap; }
+  .amount-value { font-size: clamp(30px,9vw,40px); }
+}
+</style>
+</head>
+<body>
+<!-- ICONOS LOCALES: NO REQUIEREN INTERNET -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="home" viewBox="0 0 24 24">
+    <path d="M3 11 12 3l9 8M5 10v11h5v-7h4v7h5V10"/>
+  </symbol>
+  <symbol id="book" viewBox="0 0 24 24">
+    <path d="M12 5v16M12 5C9 2 5 3 2 4v16c4-1 7-1 10 1
+    3-2 6-2 10-1V4c-3-1-7-2-10 1Z"/>
+  </symbol>
+  <symbol id="calendar" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="16" rx="2"/>
+    <path d="M7 3v4m10-4v4M3 10h18M7 14h2m4 0h2m-8 4h2"/>
+  </symbol>
+  <symbol id="users" viewBox="0 0 24 24">
+    <circle cx="9" cy="7" r="3"/>
+    <path d="M3 21v-4a6 6 0 0 1 12 0v4M16 4a3 3 0 0 1 0 6
+    m2 3a5 5 0 0 1 3 5v3"/>
+  </symbol>
+  <symbol id="coins" viewBox="0 0 24 24">
+    <ellipse cx="9" cy="8" rx="6" ry="3"/>
+    <path d="M3 8v4c0 4 12 4 12 0V8M3 12v4c0 4 12 4 12 0v-4
+    M15 3c8 0 8 6 0 6m6-3v10c0 2-2 3-4 3"/>
+  </symbol>
+  <symbol id="calculator" viewBox="0 0 24 24">
+    <rect x="5" y="2" width="14" height="20" rx="2"/>
+    <path d="M8 6h8M8 11h1m3 0h1m3 0h.1M8 15h1m3 0h1m3 0h.1
+    M8 19h1m3 0h1m3 0h.1"/>
+  </symbol>
+  <symbol id="refresh" viewBox="0 0 24 24">
+    <path d="M20 8a9 9 0 0 0-15-3L2 8m0-6v6h6
+    M4 16a9 9 0 0 0 15 3l3-3m0 6v-6h-6"/>
+  </symbol>
+  <symbol id="document" viewBox="0 0 24 24">
+    <path d="M14 2H5v20h14V7l-5-5Zm0 0v5h5M8 11h8M8 15h8M8 19h5"/>
+  </symbol>
+  <symbol id="warning" viewBox="0 0 24 24">
+    <path d="m12 3 10 18H2L12 3Z"/>
+    <path d="M12 9v5m0 3h.01"/>
+  </symbol>
+</svg>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <img class="logo"
+        src="./Logo ONP con fondo transparente.png"
+        alt="ONP">
+      <div class="brand-name">
+        Oficina de<br>Normalización<br>Previsional
+      </div>
+    </div>
+    <div class="heading">
+      <h1>Simulador de Pensión al <span>SNP</span></h1>
+      <p class="reference">
+        Esta información es referencial.
+        El resultado es una estimación de tu pensión.
+      </p>
+    </div>
+  </header>
+  <nav class="sidebar" aria-label="Menú principal">
+    <button class="nav-button active" id="navSimulator"
+      type="button" aria-current="page" aria-controls="simulator">
+      <svg class="icon" aria-hidden="true"><use href="#home"/></svg>
+      <span>Simulador<br> de pensión</span>
+    </button>
+    <button class="nav-button" id="navGuide"
+      type="button" aria-controls="guide">
+      <svg class="icon" aria-hidden="true"><use href="#book"/></svg>
+      <span>¿Cómo<br> lo uso?</span>
+    </button>
+  </nav>
+  <main>
+    <!-- PÁGINA 1 -->
+    <section class="simulator" id="simulator"
+      aria-label="Simulador de pensión">
+      <article class="panel">
+        <div class="panel-header">
+          <span class="number">1</span>
+          <h2>Ingresa tus datos</h2>
+        </div>
+        <form id="pensionForm" class="form-body">
+          <div class="field">
+            <label for="birth">
+              <svg class="icon" aria-hidden="true">
+                <use href="#calendar"/>
+              </svg>
+              Fecha de nacimiento <span class="required">*</span>
+            </label>
+            <div class="input-group">
+              <input id="birth" type="date" required
+                aria-describedby="birthHelp">
+            </div>
+            <small class="help" id="birthHelp">
+              Puedes ingresarla manualmente o usar el calendario.
+              Debes tener al menos 18 años.
+            </small>
+          </div>
+          <div class="field">
+            <label for="years">
+              <svg class="icon" aria-hidden="true">
+                <use href="#users"/>
+              </svg>
+              Años trabajados <span class="required">*</span>
+            </label>
+            <div class="input-group">
+              <input id="years" type="number" min="1" step="1"
+                placeholder="0" required aria-describedby="yearsHelp">
+              <span class="unit">años</span>
+            </div>
+            <small class="help" id="yearsHelp">
+              Ingresa tus años trabajados con aportes al SNP.
+            </small>
+          </div>
+          <div class="field">
+            <label for="udas">
+              <svg class="icon" aria-hidden="true">
+                <use href="#coins"/>
+              </svg>
+              UDAs acumuladas
+            </label>
+            <div class="input-group">
+              <input id="udas" type="number" value="0" readonly
+                aria-describedby="udasHelp">
+              <span class="unit">UDAs</span>
+            </div>
+            <small class="help" id="udasHelp">
+              Se calcula automáticamente: 1 año = 12 UDAs.
+            </small>
+          </div>
+          <div class="field">
+            <label for="salary">
+              <svg class="icon" aria-hidden="true">
+                <use href="#coins"/>
+              </svg>
+              Remuneración promedio <span class="required">*</span>
+            </label>
+            <div class="input-group">
+              <input id="salary" type="number" min="0.01" step="0.01"
+                placeholder="0" required aria-describedby="salaryHelp">
+              <span class="unit">S/</span>
+            </div>
+            <small class="help" id="salaryHelp">
+              Considera tus últimas 60 remuneraciones.
+            </small>
+          </div>
+          <p id="error" class="error" role="alert" hidden></p>
+          <button class="primary" type="submit">
+            <svg class="icon" aria-hidden="true">
+              <use href="#calculator"/>
+            </svg>
+            Simular pensión <span aria-hidden="true">➜</span>
+          </button>
+        </form>
+      </article>
+      <article class="panel result-panel">
+        <div class="panel-header">
+          <span class="number">2</span>
+          <h2>Tu resultado</h2>
+        </div>
+        <div class="result-body">
+          <div class="result-layout">
+            <div class="result-content" aria-live="polite">
+              <p class="caption" id="resultCaption">
+                Tu pensión mensual aproximada será:
+              </p>
+              <div class="amount">
+                <span class="currency">S/</span>
+                <span class="amount-value" id="amount">—</span>
+              </div>
+              <div class="result-cards">
+                <div class="result-card">
+                  <h3><svg class="icon" aria-hidden="true"><use href="#users"/></svg> Tipo de pensión</h3>
+                  <p id="pensionType">—</p>
+                </div>
+                <div class="result-card info">
+                  <h3><svg class="icon" aria-hidden="true"><use href="#document"/></svg> Información</h3>
+                  <p id="pensionInfo">
+                    Completa tus datos y presiona “Simular pensión”.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <img class="character"
+              src="./Modelo ONP con pulgar arriba.png"
+              alt="" aria-hidden="true">
+          </div>
+          <button class="reset" id="reset" type="button">
+            <svg class="icon" aria-hidden="true">
+              <use href="#refresh"/>
+            </svg>
+            Nueva simulación
+          </button>
+        </div>
+      </article>
+    </section>
+    <!-- PÁGINA 2 COMPLETA -->
+    <section class="guide" id="guide"
+      aria-labelledby="guideTitle" hidden>
+      <div class="guide-layout">
+        <div class="guide-intro">
+          <div class="speech">
+            <h2 id="guideTitle">¿Cómo lo uso?</h2>
+            <p>
+              Sigue estos pasos para obtener un monto
+              estimado de tu pensión.
+            </p>
+          </div>
+          <img class="guide-character"
+            src="./Modelo ONP señalando, fondo transparente.png"
+            alt="" aria-hidden="true">
+        </div>
+        <ol class="steps">
+          <li class="step-card">
+            <div class="step-top">
+              <span class="step-number" aria-hidden="true">1</span>
+              <h3>Ingresa tu fecha de nacimiento</h3>
+            </div>
+            <div class="step-demo" aria-hidden="true">
+              <svg class="icon"><use href="#calendar"/></svg>
+              <span class="mock-input">dd/mm/aaaa</span>
+            </div>
+            <div class="step-description">
+              <p>
+                Selecciona tu fecha de nacimiento en el calendario
+                o ingrésala manualmente.
+              </p>
+            </div>
+          </li>
+          <li class="step-card">
+            <div class="step-top">
+              <span class="step-number" aria-hidden="true">2</span>
+              <h3>Ingresa tus años trabajados</h3>
+            </div>
+            <div class="step-demo" aria-hidden="true">
+              <svg class="icon"><use href="#users"/></svg>
+              <span class="mock-input empty-years"><span class="blank-value"></span><span>años</span></span>
+            </div>
+            <div class="step-description">
+              <p>
+                Indica el total de años trabajados con aportes
+                al Sistema Nacional de Pensiones (SNP).
+              </p>
+              <p>
+                Las UDAs se calculan automáticamente:
+                <strong>años ingresados × 12.</strong>
+              </p>
+            </div>
+          </li>
+          <li class="step-card">
+            <div class="step-top">
+              <span class="step-number" aria-hidden="true">3</span>
+              <h3>Ingresa tu remuneración promedio</h3>
+            </div>
+            <div class="step-demo" aria-hidden="true">
+              <img class="demo-image" src="./Monedas azules apiladas con símbolo S_.png" alt="" aria-hidden="true">
+              <span class="mock-input">S/</span>
+            </div>
+            <div class="step-description">
+              <p>
+                Ingresa el promedio de tus últimas
+                <strong>60 remuneraciones.</strong>
+              </p>
+            </div>
+          </li>
+          <li class="step-card">
+            <div class="step-top">
+              <span class="step-number" aria-hidden="true">4</span>
+              <h3>Haz clic en “Simular pensión”</h3>
+            </div>
+            <div class="step-demo" aria-hidden="true">
+              <span class="demo-button">
+                <svg class="icon"><use href="#calculator"/></svg>
+                Simular pensión →
+              </span>
+            </div>
+            <div class="step-description">
+              <p>
+                Luego de ingresar todos los datos,
+                haz clic en este botón para obtener tu resultado.
+              </p>
+            </div>
+          </li>
+          <li class="step-card">
+            <div class="step-top">
+              <span class="step-number" aria-hidden="true">5</span>
+              <h3>Revisa tu resultado</h3>
+            </div>
+            <div class="step-demo" aria-hidden="true">
+              <img class="demo-image" src="./Documento azul con esquina doblada.png" alt="" aria-hidden="true">
+              <span class="mock-input">S/</span>
+            </div>
+            <div class="step-description">
+              <p>
+                Visualiza el monto aproximado de tu pensión
+                mensual, el tipo de pensión y la información
+                correspondiente.
+              </p>
+            </div>
+          </li>
+        </ol>
+      </div>
+      <div class="outcomes">
+        <div class="outcome-title"><img class="outcome-bulb" src="./Ícono de bombilla amarilla transparente.png" alt="" aria-hidden="true">
+          ¿Qué resultado podrás ver?
+        </div>
+        <div class="outcome-items">
+          <article class="outcome-item"><img class="outcome-image" src="./Monedas azules apiladas con símbolo S_.png" alt="" aria-hidden="true">
+            <h3>Pensión mensual estimada</h3>
+            <p>
+              El monto aproximado que podrías recibir
+              según la información ingresada.
+            </p>
+          </article>
+          <article class="outcome-item"><img class="outcome-image" src="./Gráfico de barras ascendente.png" alt="" aria-hidden="true">
+            <h3>Estimación a los 65 años</h3>
+            <p>
+              El cálculo considera los años trabajados
+              con aportes y la remuneración que ingresaste.
+            </p>
+          </article>
+          <article class="outcome-item"><img class="outcome-image" src="./Documento azul con esquina doblada.png" alt="" aria-hidden="true">
+            <h3><svg class="icon" aria-hidden="true"><use href="#users"/></svg> Tipo de pensión</h3>
+            <p>
+              Se mostrará si corresponde a jubilación
+              individual o jubilación proporcional especial,
+              según los datos ingresados.
+            </p>
+          </article>
+        </div>
+      </div>
+      <div class="reminder">
+        <img class="warning-image" src="./Ícono de advertencia amarillo y azul.png" alt="" aria-hidden="true">
+        <p>
+          <strong>Recuerda:</strong>
+          este simulador brinda un resultado referencial.
+          La información ingresada se utiliza únicamente
+          para realizar el cálculo y no constituye
+          reconocimiento de un derecho pensionario.
+        </p>
+      </div>
+      
+    </section>
+  </main>
+  <footer class="footer">
+    <p class="contact">
+      Cualquier consulta o duda, o para más información,
+      escríbenos a
+      <a href="mailto:consultas@onp.gob.pe">CONSULTAS@ONP.GOB.PE</a>
+    </p>
+    <p class="motto">Tu esfuerzo hoy, tu tranquilidad mañana</p>
+  </footer>
+</div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const form = $("pensionForm");
+const CONFIG = {
+  proporcional10a14: 300,
+  proporcional15a19: 400
+};
+function fechaLocal(date) {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, "0"),
+    String(date.getDate()).padStart(2, "0")
+  ].join("-");
+}
+function actualizarFechaMaxima() {
+  $("birth").max = fechaLocal(new Date());
+}
+actualizarFechaMaxima();
+function leerFecha(texto) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(texto)) return null;
+  const [anio, mes, dia] = texto.split("-").map(Number);
+  const fecha = new Date(0);
+  fecha.setFullYear(anio, mes - 1, dia);
+  fecha.setHours(0, 0, 0, 0);
+  if (
+    fecha.getFullYear() !== anio ||
+    fecha.getMonth() !== mes - 1 ||
+    fecha.getDate() !== dia
+  ) {
+    return null;
+  }
+  return fecha;
+}
+function calcularEdad(fecha) {
+  const hoy = new Date();
+  let edad = hoy.getFullYear() - fecha.getFullYear();
+  if (
+    hoy.getMonth() < fecha.getMonth() ||
+    (
+      hoy.getMonth() === fecha.getMonth() &&
+      hoy.getDate() < fecha.getDate()
+    )
+  ) {
+    edad--;
+  }
+  return edad;
+}
+function actualizarUDAs() {
+  const anios = Number($("years").value);
+  $("udas").value =
+    Number.isFinite(anios) && anios > 0 ? anios * 12 : 0;
+}
+function limpiarResultado() {
+  $("resultCaption").textContent =
+    "Tu pensión mensual aproximada será:";
+  $("amount").textContent = "—";
+  $("pensionType").textContent = "—";
+  $("pensionInfo").textContent =
+    "Completa tus datos y presiona “Simular pensión”.";
+}
+function mostrarError(mensaje) {
+  $("error").textContent = mensaje;
+  $("error").hidden = false;
+}
+function datosModificados() {
+  actualizarUDAs();
+  limpiarResultado();
+  $("error").hidden = true;
+}
+form.addEventListener("input", datosModificados);
+form.addEventListener("change", datosModificados);
+/* Traducción de la lógica pública P2 proporcionada por el usuario.
+   Los dos componentes se redondean por separado a céntimos, como DAX. */
+function porcentajeInicialP2(fechaNacimiento) {
+  const fecha = leerFecha(fechaNacimiento);
+  if (!fecha) throw new Error("Fecha inválida");
+  if (fechaNacimiento < "1947-01-02") return 50;
+  let edad2002 = 2002 - fecha.getFullYear();
+  if (fecha.getMonth() > 0 || fecha.getDate() > 1) edad2002--;
+  if (edad2002 <= 29) return 30;
+  if (edad2002 <= 39) return 35;
+  if (edad2002 <= 49) return 40;
+  return 45;
+}
+function calcularPensionIndividual({
+  fechaNacimiento, aniosTrabajados, remuneracionPromedio
+}) {
+  if (!Number.isSafeInteger(aniosTrabajados) || aniosTrabajados < 20 ||
+      !Number.isFinite(remuneracionPromedio) || remuneracionPromedio <= 0) {
+    throw new Error("Datos inválidos");
+  }
+  const inicial = porcentajeInicialP2(fechaNacimiento);
+  const tasa = inicial === 50 ? 4 : 2;
+  const excedente = Math.min((aniosTrabajados - 20) * tasa, 100 - inicial);
+  // Decimal exacto en céntimos: evita errores binarios al redondear.
+  const texto = remuneracionPromedio.toFixed(2);
+  if (!/^\d+\.\d{2}$/.test(texto)) throw new Error("Remuneración fuera de rango");
+  const centimos = BigInt(texto.replace(".", ""));
+  const redondear = porcentaje =>
+    (centimos * BigInt(porcentaje) + 50n) / 100n;
+  const calculada = redondear(inicial) + redondear(excedente);
+  const limitada = calculada < 60000n ? 60000n :
+    calculada > 100000n ? 100000n : calculada;
+  return Number(limitada) / 100;
+}
+form.addEventListener("submit", event => {
+  event.preventDefault();
+  actualizarFechaMaxima();
+  limpiarResultado();
+  $("error").hidden = true;
+  if (!form.reportValidity()) return;
+  const fecha = leerFecha($("birth").value);
+  const anios = Number($("years").value);
+  const remuneracion = Number($("salary").value);
+  if (!fecha || fecha > new Date()) {
+    mostrarError("Ingresa una fecha de nacimiento válida.");
+    return;
+  }
+  const edad = calcularEdad(fecha);
+  if (edad < 18) {
+    mostrarError("Debes tener al menos 18 años.");
+    return;
+  }
+  if (!Number.isSafeInteger(anios) || anios <= 0) {
+    mostrarError("Ingresa un número entero de años trabajados mayor que cero.");
+    return;
+  }
+  if (anios > edad) {
+    mostrarError("Los años trabajados no pueden superar tu edad. Revisa los datos.");
+    return;
+  }
+  if (!Number.isFinite(remuneracion) || remuneracion <= 0 ||
+      !Number.isSafeInteger(Math.round(remuneracion * 100))) {
+    mostrarError("Ingresa una remuneración promedio mayor que cero.");
+    return;
+  }
+  let importe = null;
+  let tipo = "";
+  let informacion = "";
+  if (anios < 10) {
+    $("resultCaption").textContent = "Resultado de tu simulación:";
+    tipo = "Aportes insuficientes";
+    informacion =
+      "Los años ingresados con aportes al SNP no alcanzan el mínimo de 10 años.";
+  } else if (anios < 15) {
+    importe = CONFIG.proporcional10a14;
+    tipo = "Jubilación proporcional especial";
+    informacion =
+      "Estimación a los 65 años con los años ingresados. 12 pagos al año.";
+  } else if (anios < 20) {
+    importe = CONFIG.proporcional15a19;
+    tipo = "Jubilación proporcional especial";
+    informacion =
+      "Estimación a los 65 años con los años ingresados. 12 pagos al año.";
+  } else {
+    tipo = "Jubilación individual";
+    try {
+      importe = calcularPensionIndividual({
+        fechaNacimiento: $("birth").value,
+        aniosTrabajados: anios,
+        remuneracionPromedio: remuneracion
+      });
+    } catch {
+      mostrarError("No se pudo realizar el cálculo. Revisa la fórmula configurada.");
+      return;
+    }
+    if (
+      typeof importe !== "number" ||
+      !Number.isFinite(importe) ||
+      importe < 0
+    ) {
+      mostrarError("La fórmula de cálculo no devolvió un importe válido.");
+      return;
+    } else {
+      informacion =
+        "Estimación a los 65 años con los años ingresados. 14 pagos al año. Monto referencial.";
+    }
+  }
+  $("amount").textContent = importe === null
+    ? "—"
+    : importe.toLocaleString("es-PE", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      });
+  $("pensionType").textContent = tipo;
+  $("pensionInfo").textContent = informacion;
+});
+$("reset").addEventListener("click", () => {
+  form.reset();
+  $("udas").value = 0;
+  $("error").hidden = true;
+  limpiarResultado();
+  $("birth").focus();
+});
+function mostrarPagina(pagina, moverFoco = false) {
+  const esGuia = pagina === "guia";
+  $("simulator").hidden = esGuia;
+  $("guide").hidden = !esGuia;
+  $("navSimulator").classList.toggle("active", !esGuia);
+  $("navGuide").classList.toggle("active", esGuia);
+  $("navSimulator").removeAttribute("aria-current");
+  $("navGuide").removeAttribute("aria-current");
+  $(esGuia ? "navGuide" : "navSimulator")
+    .setAttribute("aria-current", "page");
+  if (moverFoco) {
+    if (esGuia) {
+      $("guideTitle").setAttribute("tabindex", "-1");
+      $("guideTitle").focus({ preventScroll: true });
+    } else {
+      $("birth").focus({ preventScroll: true });
+    }
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+}
+function navegar(pagina) {
+  const hash = pagina === "guia" ? "#como-lo-uso" : "#simulador";
+  if (window.location.hash !== hash) {
+    window.location.hash = hash;
+  } else {
+    mostrarPagina(pagina, true);
+  }
+}
+function sincronizarPagina(moverFoco = false) {
+  mostrarPagina(
+    window.location.hash === "#como-lo-uso" ? "guia" : "simulador",
+    moverFoco
+  );
+}
+$("navSimulator").addEventListener("click", () => navegar("simulador"));
+$("navGuide").addEventListener("click", () => navegar("guia"));
+window.addEventListener("hashchange", () => sincronizarPagina(true));
+sincronizarPagina();
+actualizarUDAs();
+// Si falta una imagen decorativa, evita mostrar el ícono de imagen rota.
+document.querySelectorAll(".character, .guide-character").forEach(img => {
+  img.addEventListener("error", () => {
+    img.hidden = true;
+  });
+  if (img.complete && img.naturalWidth === 0) {
+    img.hidden = true;
+  }
+});
+</script>
+</body>
+</html>
