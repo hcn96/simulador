@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Simulador de Pensión al SNP</title>
+<title>Simulador de pensión en el SNP</title>
 <style>
 :root {
   --azul: #0471ac;
@@ -776,6 +776,140 @@ main { padding: 14px; }
 .disclaimer-actions { margin: 26px 0 0; }
 .disclaimer button { font-size: clamp(16px,2vw,20px); }
 .disclaimer button:focus-visible { outline: 3px solid #0471ac; outline-offset: 4px; }
+
+/* Correcciones acordadas: identidad ONP y distribución adaptable. */
+:root { --violeta: #0471ac; }
+.sidebar { background: #0471ac; }
+.sidebar::after { content: none; }
+.panel-header { background: linear-gradient(100deg,#0754bb,#00a6ed); }
+.field label, .unit, .result-card h3, .result-card.info h3 { color: var(--azul); }
+.reset { color: var(--azul); border-color: var(--azul); }
+.reset:hover { background: #edf8ff; }
+.form-body > .field:first-child { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.form-body > .field:first-child .input-group { width: min(100%,285px); margin: 7px auto 0; }
+.form-body > .field:first-child .help { text-align: center; }
+.form-notes { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; font-size:12px; }
+#pensionPayments { margin-top: 12px; }
+.caption { color:var(--azul); font-size:clamp(16px,1.3vw,21px); }
+.sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+.footer { display:flex; align-items:center; justify-content:space-between; gap:20px; background:#0471ac; text-align:left; }
+.motto { margin:0; text-align:right; }
+.guide-intro { justify-content:flex-end; }
+.outcome-image.icon { color:var(--azul); }
+@media(max-width:560px) { .footer { flex-direction:column; align-items:flex-start; gap:12px; } .motto { text-align:left; } .result-cards { grid-template-columns:1fr; } .result-card { min-height:110px; } .guide-intro { align-items:center; } }
+
+/* Imágenes del conjunto proporcionado y composición final. */
+.asset-icon { object-fit:contain; width:42px; height:46px; }
+.caption-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.caption-row .caption { margin:0; }
+.caption-row .asset-icon { flex:0 0 36px; width:36px; height:42px; }
+.result-card h3 .asset-icon { width:30px; height:35px; flex:0 0 30px; }
+.field label { line-height:1.25; }
+.header { position:relative; background:radial-gradient(ellipse at 80% -30%,#b8eaff 0%,transparent 68%),linear-gradient(155deg,white 35%,#e4f8ff 35%,white 60%,#c9edfb 100%); }
+.brand-name { color:#10266f; }
+.logo { width:120px; height:95px; }
+.amount { justify-content:flex-start; padding-left:24px; }
+.amount-value { color:#123d43; }
+.guide-layout { grid-template-columns:200px minmax(0,1fr); }
+.guide-character { max-height:380px; }
+.step-demo .asset-icon { width:50px; height:58px; }
+@media(min-width:1101px){
+.simulator { grid-template-columns:minmax(0,1fr) minmax(0,1.12fr); align-items:stretch; }
+.result-body { flex:1; }
+.result-layout { flex:1; align-items:end; }
+.character { max-height:380px; }
+.field .help { grid-column:2; font-size:12px; }
+.form-body > .field:first-child .help { align-self:center; }
+.form-body > .field:first-child { margin-bottom:4px; }
+.form-body > .field:first-child .input-group { width:240px; }
+.guide { display:grid; grid-template-columns:200px minmax(0,1fr); gap:14px; }
+.guide-layout { display:contents; }
+.guide-intro { grid-column:1; grid-row:1 / 4; align-self:end; }
+.steps { grid-column:2; }
+.outcomes,.reminder { grid-column:2; margin-top:0; }
+.steps { grid-template-columns:repeat(5,minmax(0,1fr)); }
+.step-number { width:44px; height:44px; font-size:30px; }
+.step-top { align-items:flex-start; }
+.step-card h3 { font-size:14px; }
+.step-card { padding:12px 8px 8px; }
+.outcomes { grid-template-columns:130px minmax(0,1fr); }
+.outcome-title { font-size:18px; padding:12px; }
+.outcome-items { gap:10px; padding:14px 10px; }
+.outcome-item { grid-template-columns:45px minmax(0,1fr); gap:8px; padding-right:8px; }
+.outcome-image { width:45px; height:58px; }
+.outcome-item h3 { font-size:14px; }
+.outcome-item p { font-size:13px; }
+}
+@media(max-width:1100px){ .guide-layout { grid-template-columns:1fr; } .guide-intro { align-items:center; } }
+@media(max-width:560px){ .caption-row { align-items:flex-start; } .field label .asset-icon { width:36px; height:40px; } .logo { height:85px; } }
+
+/* Distribución compacta: sin huecos de alineación ni columnas vacías. */
+.app { min-height:100svh; grid-template-rows:auto 1fr auto; }
+.header { grid-template-columns:260px minmax(0,1fr); gap:14px; padding:8px 18px; }
+.heading h1 { padding:5px 16px; font-size:clamp(26px,2.7vw,42px); }
+.reference { margin-top:5px; padding:6px 12px; }
+main { padding:12px; }
+.simulator,.guide { max-width:none; width:100%; }
+.simulator { align-items:start; }
+.result-layout { flex:none; align-items:start; }
+.result-content { align-self:start; }
+.result-body { flex:none; gap:12px; padding:16px; }
+.character { align-self:end; max-height:340px; }
+.caption-row { margin-bottom:10px; }
+.amount { min-height:120px; }
+.result-card { min-height:115px; }
+.form-body { gap:12px; padding:16px; }
+.form-body > .field:first-child { margin-bottom:0; }
+.form-notes { font-size:11px; }
+.footer { padding:12px 18px; }
+@media(min-width:1101px) {
+.app { grid-template-columns:145px minmax(0,1fr); }
+.simulator { grid-template-columns:minmax(0,1fr) minmax(0,1.08fr); gap:12px; }
+.result-layout { grid-template-columns:minmax(0,1fr) minmax(120px,27%); gap:10px; }
+.guide { grid-template-columns:165px minmax(0,1fr); gap:10px; align-content:start; }
+.guide-intro { grid-column:1; grid-row:1 / 4; align-self:stretch; justify-content:center; }
+.guide-character { width:100%; max-height:340px; }
+.steps { gap:8px; align-items:start; }
+.step-card { padding:10px 8px 8px; }
+.step-top { min-height:57px; align-items:center; }
+.step-demo { min-height:75px; padding:8px 0; }
+.step-description { min-height:0; flex:none; padding:10px; }
+.step-description p { font-size:13px; line-height:1.45; margin-bottom:8px; }
+.step-card { align-self:stretch; }
+.step-description { flex:1; }
+.outcomes { grid-template-columns:115px minmax(0,1fr); border-radius:12px; }
+.outcome-title { padding:10px; font-size:17px; }
+.outcome-bulb { width:35px; height:35px; }
+.outcome-items { padding:12px 10px; }
+.outcome-item { align-content:center; }
+.outcome-item h3 { margin-bottom:5px; }
+.reminder { padding:10px 14px; font-size:13px; line-height:1.45; }
+.warning-image { width:32px; height:32px; }
+}
+@media(min-width:1101px) and (max-height:850px) {
+.header { padding:6px 16px; }
+.logo { height:76px; width:90px; }
+.brand-name { font-size:15px; }
+.panel-header h2 { font-size:25px; }
+.panel-header { padding:8px 14px; }
+.number { width:36px; height:36px; font-size:25px; }
+.form-body { gap:10px; padding:12px; }
+.field label { font-size:15px; }
+.field .help { font-size:11px; line-height:1.35; }
+.input-group { min-height:40px; }
+.input-group input { padding:8px 10px; }
+.primary,.reset { min-height:48px; padding:9px; font-size:21px; }
+.asset-icon { width:35px; height:38px; }
+.result-body { padding:12px; }
+.character { max-height:305px; }
+.amount { min-height:105px; }
+.result-card { min-height:110px; padding:12px 10px; }
+.caption { font-size:17px; }
+.footer { padding:10px 16px; }
+}
+@media(max-width:1100px) { .header { grid-template-columns:220px minmax(0,1fr); } }
+@media(max-width:800px) { .app { grid-template-rows:auto auto 1fr auto; } }
+@media(max-width:560px) { .header { grid-template-columns:1fr; } .result-layout { grid-template-columns:1fr; } .character { max-height:180px; } }
 </style>
 </head>
 <body>
@@ -818,6 +952,11 @@ main { padding: 14px; }
     <path d="m12 3 10 18H2L12 3Z"/>
     <path d="M12 9v5m0 3h.01"/>
   </symbol>
+<symbol id="calendar-money" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/><path stroke="#48ae47" d="M15 13h-4a2 2 0 0 0 0 4h2a2 2 0 0 1 0 4m-1-9v9"/></symbol>
+<symbol id="shield-money" viewBox="0 0 24 24"><path stroke="#48ae47" d="M12 2 3 6v7c0 5 9 9 9 9s9-4 9-9V6Z"/><path d="M15 8h-4a2 2 0 0 0 0 4h2a2 2 0 0 1 0 4H9m3-10v12"/></symbol>
+<symbol id="hand-money" viewBox="0 0 24 24"><path d="M2 16h4l4-3h5a2 2 0 0 1 0 4h-4m4 0 5-4 2 2-7 6H7l-5-2Z"/><circle stroke="#48ae47" cx="13" cy="6" r="4"/><path stroke="#48ae47" d="M14 4h-2v2h2v2h-2"/></symbol>
+<symbol id="certificate" viewBox="0 0 24 24"><rect x="3" y="2" width="15" height="17" rx="2"/><path d="M12 6H8v4h4v4H8"/><circle stroke="#48ae47" cx="18" cy="17" r="4"/><path stroke="#48ae47" d="m16 21-1 3 3-1 3 1-1-3"/></symbol>
+<symbol id="document-check" viewBox="0 0 24 24"><path d="M14 2H4v20h10M14 2v5h5l-5-5ZM8 11h7M8 15h4"/><circle stroke="#48ae47" cx="18" cy="18" r="5"/><path stroke="#48ae47" d="m15.5 18 1.5 1.5 3-3"/></symbol>
 </svg>
 <div class="app">
   <header class="header">
@@ -830,10 +969,9 @@ main { padding: 14px; }
       </div>
     </div>
     <div class="heading">
-      <h1>Simulador de Pensión al <span>SNP</span></h1>
+      <h1>Simulador de pensión en el <span>SNP</span></h1>
       <p class="reference">
-        Esta información es referencial.
-        El resultado es una estimación de tu pensión.
+        Ten en cuenta que esta información es solo referencial y puede variar.
       </p>
     </div>
   </header>
@@ -841,7 +979,7 @@ main { padding: 14px; }
     <button class="nav-button active" id="navSimulator"
       type="button" aria-current="page" aria-controls="simulator">
       <svg class="icon" aria-hidden="true"><use href="#home"/></svg>
-      <span>Simulador<br> de pensión</span>
+      <span>Simular<br> pensión</span>
     </button>
     <button class="nav-button" id="navGuide"
       type="button" aria-controls="guide">
@@ -860,10 +998,7 @@ main { padding: 14px; }
         </div>
         <form id="pensionForm" class="form-body">
           <div class="field">
-            <label for="birth">
-              <svg class="icon" aria-hidden="true">
-                <use href="#calendar"/>
-              </svg>
+            <label for="birth"><img class="icon asset-icon" src="./Ícono ONP azul y verde-8.png" alt="" aria-hidden="true">
               Fecha de nacimiento <span class="required">*</span>
             </label>
             <div class="input-group">
@@ -871,56 +1006,46 @@ main { padding: 14px; }
                 aria-describedby="birthHelp">
             </div>
             <small class="help" id="birthHelp">
-              Puedes ingresarla manualmente o usar el calendario.
-              Debes tener al menos 18 años.
+              Puedes ingresar tu fecha manualmente.
             </small>
           </div>
           <div class="field">
-            <label for="years">
-              <svg class="icon" aria-hidden="true">
-                <use href="#users"/>
-              </svg>
-              Años trabajados <span class="required">*</span>
+            <label for="years"><img class="icon asset-icon" src="./Ícono ONP azul y verde-1.png" alt="" aria-hidden="true">
+              Años de aporte <span class="required">*</span>
             </label>
             <div class="input-group">
               <input id="years" type="number" min="1" step="1"
-                placeholder="0" required aria-describedby="yearsHelp">
+                required aria-describedby="yearsHelp">
               <span class="unit">años</span>
             </div>
             <small class="help" id="yearsHelp">
-              Ingresa tus años trabajados con aportes al SNP.
+              Ingresa la cantidad de años que aportaste al SNP.
             </small>
           </div>
           <div class="field">
-            <label for="udas">
-              <svg class="icon" aria-hidden="true">
-                <use href="#coins"/>
-              </svg>
-              Unidades de aportes
+            <label for="udas"><img class="icon asset-icon" src="./Ícono ONP azul y verde-3.png" alt="" aria-hidden="true">
+              Unidades de Aporte
             </label>
             <div class="input-group">
-              <input id="udas" type="number" value="0" readonly
+              <input id="udas" type="number" value="" readonly
                 aria-describedby="udasHelp">
-              <span class="unit">UDAs</span>
+              <span class="unit">UdA</span>
             </div>
             <small class="help" id="udasHelp">
-              Se calcula automáticamente: 1 año = 12 UDAs.
+              El cálculo de UdA será automático (1 año = 12 UdA).<br>El monto de una UdA equivale al 13 % de la RMV.
             </small>
           </div>
           <div class="field">
-            <label for="salary">
-              <svg class="icon" aria-hidden="true">
-                <use href="#coins"/>
-              </svg>
-              Remuneración promedio <span class="required">*</span>
+            <label for="salary"><img class="icon asset-icon" src="./Ícono ONP azul y verde, fondo transparente-2.png" alt="" aria-hidden="true">
+              Remuneración o ingreso mensual promedio <span class="required">*</span>
             </label>
             <div class="input-group">
               <input id="salary" type="number" min="0.01" step="0.01"
-                placeholder="0" required aria-describedby="salaryHelp">
+                required aria-describedby="salaryHelp">
               <span class="unit">S/</span>
             </div>
             <small class="help" id="salaryHelp">
-              Considera tus últimas 60 remuneraciones.
+              Considera tus últimas 60 remuneraciones o ingresos que no deben ser menores a la RMV.
             </small>
           </div>
           <p id="error" class="error" role="alert" hidden></p>
@@ -930,6 +1055,7 @@ main { padding: 14px; }
             </svg>
             Simular pensión <span aria-hidden="true">➜</span>
           </button>
+          <div class="form-notes"><span><span class="required">(*)</span> Campos obligatorios</span><span>RMV = Remuneración Mínima Vital.</span></div>
         </form>
       </article>
       <article class="panel result-panel">
@@ -940,22 +1066,22 @@ main { padding: 14px; }
         <div class="result-body">
           <div class="result-layout">
             <div class="result-content" aria-live="polite">
-              <p class="caption" id="resultCaption">
-                Tu pensión mensual aproximada será:
-              </p>
+              <div class="caption-row"><img class="icon asset-icon" src="./Ícono ONP azul y verde-4.png" alt="" aria-hidden="true"><p class="caption" id="resultCaption">
+                Monto de la pensión estimada a partir de los 65 años
+              </p></div>
               <div class="amount">
                 <span class="currency">S/</span>
-                <span class="amount-value" id="amount">—</span>
+                <span class="amount-value" id="amount"></span>
               </div>
               <div class="result-cards">
                 <div class="result-card">
-                  <h3><svg class="icon" aria-hidden="true"><use href="#users"/></svg> Tipo de pensión</h3>
-                  <p id="pensionType">—</p>
+                  <h3><img class="icon asset-icon" src="./Ícono ONP azul y verde-5.png" alt="" aria-hidden="true"> Tipo de pensión</h3>
+                  <p id="pensionType"></p><p id="pensionPayments"></p>
                 </div>
                 <div class="result-card info">
-                  <h3><svg class="icon" aria-hidden="true"><use href="#document"/></svg> Información</h3>
+                  <h3><img class="icon asset-icon" src="./Ícono ONP azul y verde-6.png" alt="" aria-hidden="true"> Información adicional</h3>
                   <p id="pensionInfo">
-                    Completa tus datos y presiona “Simular pensión”.
+                    
                   </p>
                 </div>
               </div>
@@ -978,13 +1104,7 @@ main { padding: 14px; }
       aria-labelledby="guideTitle" hidden>
       <div class="guide-layout">
         <div class="guide-intro">
-          <div class="speech">
-            <h2 id="guideTitle">¿Cómo lo uso?</h2>
-            <p>
-              Sigue estos pasos para obtener un monto
-              estimado de tu pensión.
-            </p>
-          </div>
+          <h2 id="guideTitle" class="sr-only">¿Cómo lo uso?</h2>
           <img class="guide-character"
             src="./Modelo ONP señalando, fondo transparente.png"
             alt="" aria-hidden="true">
@@ -996,7 +1116,7 @@ main { padding: 14px; }
               <h3>Ingresa tu fecha de nacimiento</h3>
             </div>
             <div class="step-demo" aria-hidden="true">
-              <svg class="icon"><use href="#calendar"/></svg>
+              <img class="icon asset-icon" src="./Ícono ONP azul y verde-8.png" alt="" aria-hidden="true">
               <span class="mock-input">dd/mm/aaaa</span>
             </div>
             <div class="step-description">
@@ -1009,10 +1129,10 @@ main { padding: 14px; }
           <li class="step-card">
             <div class="step-top">
               <span class="step-number" aria-hidden="true">2</span>
-              <h3>Ingresa tus años trabajados</h3>
+              <h3>Ingresa los años de aporte</h3>
             </div>
             <div class="step-demo" aria-hidden="true">
-              <svg class="icon"><use href="#users"/></svg>
+              <img class="icon asset-icon" src="./Ícono ONP azul y verde aislado-7.png" alt="" aria-hidden="true">
               <span class="mock-input empty-years"><span class="blank-value"></span><span>años</span></span>
             </div>
             <div class="step-description">
@@ -1021,24 +1141,22 @@ main { padding: 14px; }
                 al Sistema Nacional de Pensiones (SNP).
               </p>
               <p>
-                Las UDAs se calculan automáticamente:
-                <strong>años ingresados × 12.</strong>
+                Las unidades de aportes se calcularán automáticamente: <strong>años trabajados × 12.</strong>
               </p>
             </div>
           </li>
           <li class="step-card">
             <div class="step-top">
               <span class="step-number" aria-hidden="true">3</span>
-              <h3>Ingresa tu remuneración promedio</h3>
+              <h3>Ingresa tu remuneración o ingreso promedio</h3>
             </div>
             <div class="step-demo" aria-hidden="true">
-              <img class="demo-image" src="./Monedas azules apiladas con símbolo S_.png" alt="" aria-hidden="true">
+              <img class="icon asset-icon" src="./Ícono ONP azul y verde-9.png" alt="" aria-hidden="true">
               <span class="mock-input">S/</span>
             </div>
             <div class="step-description">
               <p>
-                Ingresa el promedio de tus últimas
-                <strong>60 remuneraciones.</strong>
+                Considera tus últimas <strong>60 remuneraciones o ingresos.</strong>
               </p>
             </div>
           </li>
@@ -1055,8 +1173,7 @@ main { padding: 14px; }
             </div>
             <div class="step-description">
               <p>
-                Luego de ingresar todos los datos,
-                haz clic en este botón para obtener tu resultado.
+                Haz clic en este botón para obtener tu resultado.
               </p>
             </div>
           </li>
@@ -1066,14 +1183,12 @@ main { padding: 14px; }
               <h3>Revisa tu resultado</h3>
             </div>
             <div class="step-demo" aria-hidden="true">
-              <img class="demo-image" src="./Documento azul con esquina doblada.png" alt="" aria-hidden="true">
+              <img class="demo-image" src="./Ícono ONP azul y verde-10.png" alt="" aria-hidden="true">
               <span class="mock-input">S/</span>
             </div>
             <div class="step-description">
               <p>
-                Visualiza el monto aproximado de tu pensión
-                mensual, el tipo de pensión y la información
-                correspondiente.
+                Visualiza el monto aproximado de tu pensión mensual.
               </p>
             </div>
           </li>
@@ -1084,50 +1199,26 @@ main { padding: 14px; }
           ¿Qué resultado podrás ver?
         </div>
         <div class="outcome-items">
-          <article class="outcome-item"><img class="outcome-image" src="./Monedas azules apiladas con símbolo S_.png" alt="" aria-hidden="true">
-            <h3>Pensión mensual estimada</h3>
-            <p>
-              El monto aproximado que podrías recibir
-              según la información ingresada.
-            </p>
-          </article>
-          <article class="outcome-item"><img class="outcome-image" src="./Gráfico de barras ascendente.png" alt="" aria-hidden="true">
-            <h3>Estimación a los 65 años</h3>
-            <p>
-              El cálculo considera los años trabajados
-              con aportes y la remuneración que ingresaste.
-              No añade años futuros automáticamente.
-            </p>
-          </article>
-          <article class="outcome-item"><img class="outcome-image" src="./Documento azul con esquina doblada.png" alt="" aria-hidden="true">
-            <h3><svg class="icon" aria-hidden="true"><use href="#users"/></svg> Tipo de pensión</h3>
-            <p>
-              Se mostrará si corresponde a jubilación
-              individual o jubilación proporcional especial,
-              según los datos ingresados.
-            </p>
-          </article>
+          <article class="outcome-item"><img class="outcome-image" src="./Ícono ONP azul y verde transparente-11.png" alt="" aria-hidden="true"><h3>Monto de la pensión estimada a partir de los 65 años</h3><p>Según la información que hayas ingresado.</p></article>
+          <article class="outcome-item"><img class="outcome-image" src="./Ícono financiero ONP azul y verde-12.png" alt="" aria-hidden="true"><h3>Tipo de pensión</h3><p>Se mostrará si corresponde jubilación regular o proporcional.</p></article>
+          <article class="outcome-item"><img class="outcome-image" src="./Ícono ONP azul y verde-13.png" alt="" aria-hidden="true"><h3>Información adicional</h3><p>Se detalla la información del tipo de pensión estimada.</p></article>
         </div>
       </div>
       <div class="reminder">
         <img class="warning-image" src="./Ícono de advertencia amarillo y azul.png" alt="" aria-hidden="true">
         <p>
           <strong>Recuerda:</strong>
-          este simulador brinda un resultado referencial.
+          Este simulador brinda un resultado referencial.
           La información ingresada se utiliza únicamente
           para realizar el cálculo y no constituye
-          reconocimiento de un derecho pensionario.
+          el reconocimiento de un derecho pensionario.
         </p>
       </div>
       
     </section>
   </main>
   <footer class="footer">
-    <p class="contact">
-      Si tienes dudas o deseas mayor información,
-      escribenos a
-      <a href="mailto:consultas@onp.gob.pe">CONSULTAS@ONP.GOB.PE</a>
-    </p>
+    <p class="contact">¿Tienes dudas? Escríbenos al correo<br><a href="mailto:consultas@onp.gob.pe">consultas@onp.gob.pe</a></p>
     <p class="motto">Tu esfuerzo hoy, tu tranquilidad mañana</p>
   </footer>
 </div>
@@ -1194,15 +1285,16 @@ function calcularEdad(fecha) {
 function actualizarUDAs() {
   const anios = Number($("years").value);
   $("udas").value =
-    Number.isFinite(anios) && anios > 0 ? anios * 12 : 0;
+    Number.isFinite(anios) && anios > 0 ? anios * 12 : "";
 }
 function limpiarResultado() {
   $("resultCaption").textContent =
-    "Tu pensión mensual aproximada será:";
-  $("amount").textContent = "—";
-  $("pensionType").textContent = "—";
+    "Monto de la pensión estimada a partir de los 65 años";
+  $("amount").textContent = "";
+  $("pensionType").textContent = "";
+  $("pensionPayments").textContent = "";
   $("pensionInfo").textContent =
-    "Completa tus datos y presiona “Simular pensión”.";
+    "";
 }
 function mostrarError(mensaje) {
   $("error").textContent = mensaje;
@@ -1268,11 +1360,11 @@ form.addEventListener("submit", event => {
     return;
   }
   if (!Number.isSafeInteger(anios) || anios <= 0) {
-    mostrarError("Ingresa un número entero de años trabajados mayor que cero.");
+    mostrarError("Ingresa un número entero de años de aporte mayor que cero.");
     return;
   }
   if (anios > edad) {
-    mostrarError("Los años trabajados no pueden superar tu edad. Revisa los datos.");
+    mostrarError("Los años de aporte no pueden superar tu edad. Revisa los datos.");
     return;
   }
   if (!Number.isFinite(remuneracion) || remuneracion <= 0 ||
@@ -1283,23 +1375,27 @@ form.addEventListener("submit", event => {
   let importe = null;
   let tipo = "";
   let informacion = "";
+  let pagos = "";
   if (anios < 10) {
     $("resultCaption").textContent = "Resultado de tu simulación:";
     tipo = "Aportes insuficientes";
     informacion =
-      "Los años ingresados con aportes al SNP no alcanzan el mínimo de 10 años.";
+      "Necesitas al menos 10 años de aportes para acceder a una pensión.";
   } else if (anios < 15) {
     importe = CONFIG.proporcional10a14;
-    tipo = "Jubilación proporcional especial";
+    tipo = "Pensión proporcional";
     informacion =
-      "Estimación a los 65 años con los años ingresados. 12 pagos al año.";
+      "Con 10 y menos de 15 años de aportes, la pensión estimada es S/ 300.";
+    pagos = "Te corresponderían 12 pagos al año.";
   } else if (anios < 20) {
     importe = CONFIG.proporcional15a19;
-    tipo = "Jubilación proporcional especial";
+    tipo = "Pensión proporcional";
     informacion =
-      "Estimación a los 65 años con los años ingresados. 12 pagos al año.";
+      "Con 15 y menos de 20 años de aportes, la pensión estimada es S/ 400.";
+    pagos = "Te corresponderían 12 pagos al año.";
   } else {
-    tipo = "Jubilación individual";
+    tipo = "Pensión regular";
+    pagos = "Te corresponderían 14 pagos al año.";
     try {
       importe = calcularPensionIndividual({
         fechaNacimiento: $("birth").value,
@@ -1319,21 +1415,22 @@ form.addEventListener("submit", event => {
       return;
     } else {
       informacion =
-        "Estimación a los 65 años con los años ingresados. 14 pagos al año. Monto referencial.";
+        "Con 20 años de aportes a más, la pensión estimada va desde S/ 600 hasta S/ 1000.";
     }
   }
   $("amount").textContent = importe === null
-    ? "—"
+    ? ""
     : importe.toLocaleString("es-PE", {
         minimumFractionDigits: 0,
         maximumFractionDigits: 2
       });
   $("pensionType").textContent = tipo;
+  $("pensionPayments").textContent = pagos;
   $("pensionInfo").textContent = informacion;
 });
 $("reset").addEventListener("click", () => {
   form.reset();
-  $("udas").value = 0;
+  $("udas").value = "";
   $("error").hidden = true;
   limpiarResultado();
   $("birth").focus();
